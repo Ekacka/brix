@@ -1,14 +1,21 @@
 package model;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Post {
+
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
 
     private Long id;
     private String title;
     private String content;
     private String postedBy;
     private Date createdAt;
+
+    public Post() {
+        id = (long) ID_GENERATOR.getAndIncrement();
+    }
 
     public void setId(Long id) {
         this.id = id;
