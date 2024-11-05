@@ -10,8 +10,8 @@ public class RuntimePostRepository implements PostRepository {
 
     List<Post> posts;
 
-    public RuntimePostRepository(List<Post> posts) {
-        this.posts = posts;
+    public RuntimePostRepository() {
+        posts = new ArrayList<>();
     }
 
     @Override
