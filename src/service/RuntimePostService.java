@@ -7,7 +7,7 @@ import model.Post;
 import java.util.List;
 
 public class RuntimePostService implements PostService {
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
     public RuntimePostService(PostRepository postRepo) {
         this.postRepo = postRepo;
@@ -43,5 +43,10 @@ public class RuntimePostService implements PostService {
     @Override
     public List<Post> getAllPosts() {
         return postRepo.findAll();
+    }
+
+    @Override
+    public Class<?> getClassToBind() {
+        return PostService.class;
     }
 }
