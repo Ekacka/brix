@@ -35,4 +35,8 @@ public class PostBuilder {
         post.setPostedBy(postedBy);
         return this;
     }
+
+    public Post build() {
+        return post;
+    }
 }
