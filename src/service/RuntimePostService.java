@@ -29,7 +29,7 @@ public class RuntimePostService implements PostService {
     }
 
     @Override
-    public Post getPost(Long id) {
+    public Post getPostById(Long id) {
         Post post;
         try {
             post = postRepo.findById(id);
