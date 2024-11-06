@@ -5,6 +5,7 @@ import model.builder.PostBuilder;
 import service.PostService;
 import service.RuntimePostService;
 import service.ServiceManager;
+import service.EditPostCommand;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -29,22 +30,10 @@ public class Main {
             int pressedKey = sc.nextInt();
             switch (pressedKey) {
                 case 1 -> createPostMenu();
-                case 2 -> {
-                    PostService service = serviceManager.getService(PostService.class);
-                    for (Post post : service.getAllPosts()) {
-                        System.out.println("---------");
-                        System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
-                        System.out.printf("Content: %s%n", post.getContent());
-                        System.out.printf("Posted by: %s%n", post.getPostedBy());
-                        System.out.printf("%nCreated at: %s%n", post.getCreatedAt().toString());
-                        System.out.println("---------");
-                    }
-                    if(service.getAllPosts().isEmpty()) {
-                        System.out.println("No posts yet.");
-                    }
-                    mainMenu();
-                }
+                case 2 -> displayAllPosts();
                 case 3 -> deletePostMenu();
+                case 4 -> editPostMenu();
+                case 5 -> undoLastAction();
             }
         }
         sc.close();
@@ -67,28 +56,70 @@ public class Main {
 
         builder.setCreatedAt(new Date());
 
-        mainMenu();
+        Post post = builder.setTitle(title).setContent(content).setPostedBy(postedBy).build();
+        postService.createPost(post);
 
+        System.out.println("Post created successfully.");
+        mainMenu();
+    }
+
+    private static void displayAllPosts() {
         PostService service = serviceManager.getService(PostService.class);
-        service.createPost(builder.setTitle(title).setContent(content).setPostedBy(postedBy).build());
+        for (Post post : service.getAllPosts()) {
+            System.out.println("---------");
+            System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
+            System.out.printf("Content: %s%n", post.getContent());
+            System.out.printf("Posted by: %s%n", post.getPostedBy());
+            System.out.printf("Created at: %s%n", post.getCreatedAt().toString());
+            System.out.println("---------");
+        }
+        if (service.getAllPosts().isEmpty()) {
+            System.out.println("No posts yet.");
+        }
+        mainMenu();
     }
 
     private static void deletePostMenu() {
         Scanner sc = new Scanner(System.in);
-        long id;
         System.out.println("Input id of post that you want to delete.");
-        id = sc.nextLong();
+        long id = sc.nextLong();
 
-        PostService service = serviceManager.getService(PostService.class);
-
+        Post post = postService.getPostById(id);
+        if (post != null) {
+            postService.deletePost(id);
+            System.out.println("Post deleted successfully.");
+        } else {
+            System.out.println("Post with id " + id + " does not exist.");
+        }
         mainMenu();
+    }
 
-        service.deletePost(id);
+    private static void editPostMenu() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the ID of the post you want to edit:");
+        long id = sc.nextLong();
+        sc.nextLine();
+        System.out.println("Enter the new content:");
+        String newContent = sc.nextLine();
+
+        EditPostCommand editCommand = new EditPostCommand(postService, id, newContent);
+        serviceManager.executeCommand(editCommand);
+
+        System.out.println("Post edited successfully.");
+        mainMenu();
+    }
+
+    private static void undoLastAction() {
+        serviceManager.undoLastCommand();
+        System.out.println("Last action undone.");
+        mainMenu();
     }
 
     private static void mainMenu() {
         System.out.println("Press 1 to create post.");
         System.out.println("Press 2 to see all posts.");
         System.out.println("Press 3 to delete post.");
+        System.out.println("Press 4 to edit post.");
+        System.out.println("Press 5 to undo last action.");
     }
 }
