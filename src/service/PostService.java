@@ -1,7 +1,6 @@
 package service;
 
 import model.Post;
-
 import java.util.List;
 
 public interface PostService extends Service {
@@ -10,4 +9,8 @@ public interface PostService extends Service {
     void deletePost(Long id);
     Post getPostById(Long id);
     List<Post> getAllPosts();
+
+    // New methods for archived posts
+    void archivePost(Long id);
+    List<Post> getArchivedPosts();
 }
