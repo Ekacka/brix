@@ -4,10 +4,12 @@ import database.PostRepository;
 import exception.PostNotFoundException;
 import model.Post;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RuntimePostService implements PostService {
     private final PostRepository postRepo;
+    private final List<Post> archivedPosts = new ArrayList<>();  // New archive list
 
     public RuntimePostService(PostRepository postRepo) {
         this.postRepo = postRepo;
@@ -30,19 +32,31 @@ public class RuntimePostService implements PostService {
 
     @Override
     public Post getPostById(Long id) {
-        Post post;
         try {
-            post = postRepo.findById(id);
+            return postRepo.findById(id);
         } catch (PostNotFoundException e) {
             e.printStackTrace();
             return null;
         }
-        return post;
     }
 
     @Override
     public List<Post> getAllPosts() {
         return postRepo.findAll();
+    }
+
+    @Override
+    public void archivePost(Long id) {
+        Post post = getPostById(id);
+        if (post != null) {
+            archivedPosts.add(post);
+            deletePost(id);
+        }
+    }
+
+    @Override
+    public List<Post> getArchivedPosts() {
+        return archivedPosts;
     }
 
     @Override
