@@ -31,7 +31,7 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         mainMenu();
-        while (sc.hasNextInt()) {
+        loop: while (sc.hasNextInt()) {
             int pressedKey = sc.nextInt();
             switch (pressedKey) {
                 case 1 -> createPostMenu();
@@ -41,11 +41,14 @@ public class Main {
                 case 5 -> undoLastAction();
                 case 6 -> binManagementMenu();// Enter Bin Management Menu
                 case 7 -> findPostByTitleMenu();
-                case 0 -> {}
+                case 0 -> {
+                    break loop;
+                }
                 default -> System.out.println("Invalid option. Please try again.");
             }
             mainMenu();
         }
+        System.out.println("Goodbye!");
         sc.close();
     }
     private static void findPostByTitleMenu() {
