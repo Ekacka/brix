@@ -2,11 +2,7 @@ import database.PostRepository;
 import database.RuntimePostRepository;
 import model.Post;
 import model.builder.PostBuilder;
-import service.BinManager;
-import service.PostService;
-import service.RuntimePostService;
-import service.ServiceManager;
-import service.SimpleBinManager;
+import service.*;
 
 import java.util.Date;
 import java.util.List;
@@ -39,6 +35,7 @@ public class Main {
                 case 4 -> editPostMenu();
                 case 5 -> undoLastAction();
                 case 6 -> binManagementMenu(); // Enter Bin Management Menu
+                case 0 -> {}
                 default -> System.out.println("Invalid option. Please try again.");
             }
             mainMenu();
@@ -109,14 +106,8 @@ public class Main {
         System.out.println("Enter the new content:");
         String newContent = sc.nextLine();
 
-        Post post = service.getPostById(id);
-        if (post != null) {
-            post.setContent(newContent);
-            service.updatePost(id, post);
-            System.out.println("Post edited successfully.");
-        } else {
-            System.out.println("Post with ID " + id + " not found.");
-        }
+        Command command = new EditPostCommand(service, id, newContent);
+        serviceManager.executeCommand(command);
     }
 
     // New Bin Management Menu
