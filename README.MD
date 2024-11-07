@@ -11,7 +11,7 @@ design patterns, UML diagrams, and usage instructions.
 
 1. **Clone the Repository**
 
-   git clone https://github.com/your-username/blogging-platform-console.git
+   git clone https://github.com/arxshi/brix
    cd blogging-platform-console
 
 ## Features
