@@ -35,4 +35,9 @@ public class SimpleBinManager implements BinManager {
     public List<Post> getAllBinPosts() {
         return new ArrayList<>(binPosts);
     }
+
+    @Override
+    public Class<?> getClassToBind() {
+        return BinManager.class;
+    }
 }
