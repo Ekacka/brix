@@ -10,7 +10,4 @@ public interface PostService extends Service {
     Post getPostById(Long id);
     List<Post> getAllPosts();
 
-    // New methods for archived posts
-    void archivePost(Long id);
-    List<Post> getArchivedPosts();
 }

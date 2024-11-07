@@ -46,20 +46,6 @@ public class RuntimePostService implements PostService {
     }
 
     @Override
-    public void archivePost(Long id) {
-        Post post = getPostById(id);
-        if (post != null) {
-            archivedPosts.add(post);
-            deletePost(id);
-        }
-    }
-
-    @Override
-    public List<Post> getArchivedPosts() {
-        return archivedPosts;
-    }
-
-    @Override
     public Class<?> getClassToBind() {
         return PostService.class;
     }

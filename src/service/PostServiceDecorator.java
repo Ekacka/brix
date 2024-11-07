@@ -35,15 +35,7 @@ public abstract class PostServiceDecorator implements PostService {
         return wrappedService.getAllPosts();
     }
 
-    @Override
-    public void archivePost(Long id) {
-        wrappedService.archivePost(id);
-    }
-
-    @Override
-    public List<Post> getArchivedPosts() {
-        return wrappedService.getArchivedPosts();
-    }
+    public abstract Post searchPostByTitle(String title);
 
     @Override
     public Class<?> getClassToBind() {

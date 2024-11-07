@@ -11,18 +11,23 @@ import java.util.Scanner;
 public class Main {
 
     static PostService postService;
+    static PostServiceDecorator searchPostService;
     static BinManager binManager;
     static ServiceManager serviceManager;
+    static PostRepository postRepo;
 
     public static void main(String[] args) {
 
-        PostRepository postRepo = new RuntimePostRepository();
+
+        postRepo = new RuntimePostRepository();
         postService = new RuntimePostService(postRepo);
+        searchPostService = new SearchPostService(postService, postRepo);
         binManager = new SimpleBinManager();
         serviceManager = new ServiceManager();
 
         serviceManager.registerService(postService);
         serviceManager.registerService(binManager);
+        serviceManager.registerService(searchPostService);
 
         Scanner sc = new Scanner(System.in);
         mainMenu();
@@ -34,13 +39,29 @@ public class Main {
                 case 3 -> deletePostMenu();
                 case 4 -> editPostMenu();
                 case 5 -> undoLastAction();
-                case 6 -> binManagementMenu(); // Enter Bin Management Menu
+                case 6 -> binManagementMenu();// Enter Bin Management Menu
+                case 7 -> findPostByTitleMenu();
                 case 0 -> {}
                 default -> System.out.println("Invalid option. Please try again.");
             }
             mainMenu();
         }
         sc.close();
+    }
+    private static void findPostByTitleMenu() {
+        Scanner sc = new Scanner(System.in);
+        PostServiceDecorator service = serviceManager.getService(PostServiceDecorator.class);
+
+        System.out.println("Enter title to search for:");
+        String title = sc.nextLine();
+        Post post = service.searchPostByTitle(title);
+
+        if (post != null) {
+            printPost(post);
+        } else {
+            System.out.println("Post with title " + title + " not found.");
+        }
+
     }
     private static void undoLastAction() {
         serviceManager.undoLastCommand();
@@ -68,16 +89,20 @@ public class Main {
     private static void displayAllPosts() {
         PostService service = serviceManager.getService(PostService.class);
         for (Post post : service.getAllPosts()) {
-            System.out.println("---------");
-            System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
-            System.out.printf("Content: %s%n", post.getContent());
-            System.out.printf("Posted by: %s%n", post.getPostedBy());
-            System.out.printf("Created at: %s%n", post.getCreatedAt().toString());
-            System.out.println("---------");
+            printPost(post);
         }
         if (service.getAllPosts().isEmpty()) {
             System.out.println("No posts yet.");
         }
+    }
+
+    private static void printPost(Post post) {
+        System.out.println("---------");
+        System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
+        System.out.printf("Content: %s%n", post.getContent());
+        System.out.printf("Posted by: %s%n", post.getPostedBy());
+        System.out.printf("Created at: %s%n", post.getCreatedAt().toString());
+        System.out.println("---------");
     }
 
     private static void deletePostMenu() {
@@ -154,12 +179,7 @@ public class Main {
 
         List<Post> binPosts = manager.getAllBinPosts();
         for (Post post : binPosts) {
-            System.out.println("---------");
-            System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
-            System.out.printf("Content: %s%n", post.getContent());
-            System.out.printf("Posted by: %s%n", post.getPostedBy());
-            System.out.printf("Created at: %s%n", post.getCreatedAt().toString());
-            System.out.println("---------");
+            printPost(post);
         }
         if (binPosts.isEmpty()) {
             System.out.println("No posts in the bin.");
@@ -199,6 +219,7 @@ public class Main {
         System.out.println("Press 4 to edit post.");
         System.out.println("Press 5 to undo last action.");
         System.out.println("Press 6 to manage bin.");
+        System.out.println("Press 7 to search post by title.");
         System.out.println("Press 0 to exit.");
     }
 }
