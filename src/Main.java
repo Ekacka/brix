@@ -26,6 +26,7 @@ public class Main {
         serviceManager = new ServiceManager();
 
         serviceManager.registerService(postService);
+        serviceManager.registerService(binManager);
 
         Scanner sc = new Scanner(System.in);
         mainMenu();
@@ -61,13 +62,15 @@ public class Main {
 
         builder.setCreatedAt(new Date());
         Post post = builder.setTitle(title).setContent(content).setPostedBy(postedBy).build();
-        postService.createPost(post);
+        PostService service = serviceManager.getService(PostService.class);
+        service.createPost(post);
 
         System.out.println("Post created successfully.");
     }
 
     private static void displayAllPosts() {
-        for (Post post : postService.getAllPosts()) {
+        PostService service = serviceManager.getService(PostService.class);
+        for (Post post : service.getAllPosts()) {
             System.out.println("---------");
             System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
             System.out.printf("Content: %s%n", post.getContent());
@@ -75,19 +78,20 @@ public class Main {
             System.out.printf("Created at: %s%n", post.getCreatedAt().toString());
             System.out.println("---------");
         }
-        if (postService.getAllPosts().isEmpty()) {
+        if (service.getAllPosts().isEmpty()) {
             System.out.println("No posts yet.");
         }
     }
 
     private static void deletePostMenu() {
         Scanner sc = new Scanner(System.in);
+        PostService service = serviceManager.getService(PostService.class);
         System.out.println("Input id of post that you want to delete.");
         long id = sc.nextLong();
 
-        Post post = postService.getPostById(id);
+        Post post = service.getPostById(id);
         if (post != null) {
-            postService.deletePost(id);
+            service.deletePost(id);
             System.out.println("Post deleted successfully.");
         } else {
             System.out.println("Post with id " + id + " does not exist.");
@@ -96,16 +100,19 @@ public class Main {
 
     private static void editPostMenu() {
         Scanner sc = new Scanner(System.in);
+        PostService service = serviceManager.getService(PostService.class);
+
         System.out.println("Enter the ID of the post you want to edit:");
         long id = sc.nextLong();
+
         sc.nextLine();
         System.out.println("Enter the new content:");
         String newContent = sc.nextLine();
 
-        Post post = postService.getPostById(id);
+        Post post = service.getPostById(id);
         if (post != null) {
             post.setContent(newContent);
-            postService.updatePost(id, post);
+            service.updatePost(id, post);
             System.out.println("Post edited successfully.");
         } else {
             System.out.println("Post with ID " + id + " not found.");
@@ -135,13 +142,16 @@ public class Main {
 
     private static void binPostMenu() {
         Scanner sc = new Scanner(System.in);
+        PostService service = serviceManager.getService(PostService.class);
+        BinManager manager = serviceManager.getService(BinManager.class);
+
         System.out.println("Enter the ID of the post you want to move to the bin:");
         long id = sc.nextLong();
 
-        Post post = postService.getPostById(id);
+        Post post = service.getPostById(id);
         if (post != null) {
-            binManager.binPost(post);
-            postService.deletePost(id);
+            manager.binPost(post);
+            service.deletePost(id);
             System.out.println("Post moved to bin successfully.");
         } else {
             System.out.println("Post not found.");
@@ -149,7 +159,9 @@ public class Main {
     }
 
     private static void displayBinPosts() {
-        List<Post> binPosts = binManager.getAllBinPosts();
+        BinManager manager = serviceManager.getService(BinManager.class);
+
+        List<Post> binPosts = manager.getAllBinPosts();
         for (Post post : binPosts) {
             System.out.println("---------");
             System.out.printf("Title: %s Id: %d%n", post.getTitle(), post.getId());
@@ -164,13 +176,17 @@ public class Main {
     }
 
     private static void restorePostMenu() {
+
         Scanner sc = new Scanner(System.in);
+        PostService service = serviceManager.getService(PostService.class);
+        BinManager manager = serviceManager.getService(BinManager.class);
+
         System.out.println("Enter the ID of the post you want to restore from the bin:");
         long id = sc.nextLong();
 
-        Post restoredPost = binManager.restorePostById(id);
+        Post restoredPost = manager.restorePostById(id);
         if (restoredPost != null) {
-            postService.createPost(restoredPost);
+            service.createPost(restoredPost);
             System.out.println("Post restored successfully.");
         } else {
             System.out.println("No post found in the bin with ID: " + id);
@@ -178,7 +194,9 @@ public class Main {
     }
 
     private static void clearAllBinPosts() {
-        binManager.clearAllBinPosts();
+        BinManager manager = serviceManager.getService(BinManager.class);
+
+        manager.clearAllBinPosts();
         System.out.println("All posts in the bin have been permanently deleted.");
     }
 
