@@ -22,6 +22,7 @@ design patterns, UML diagrams, and usage instructions.
 - **Edit Post**: Modify an existing post's content.
 - **Undo Last Action**: Rollback the most recent change (create, delete, edit).
 - **Bin Management**: Manage deleted posts (move to bin, restore, or permanently delete them).
+- **Search by title**: Searching by title of a post.
 
 ## System Architecture
 
@@ -59,8 +60,8 @@ This diagram represents the classes and their relationships in the project.
 
 - **PostServiceDecorator** (abstract class)
     - ↳ Extends PostService, allowing for service extension via decorators
-    - ↳ **ArchivePostServiceDecorator**
-        - Adds functionality to archive posts
+    - ↳ **SearchPostService**
+        - Adds functionality to search posts by a title
 
 - **BinManager** (interface)
     - Implementation:
@@ -82,7 +83,7 @@ Main --> ServiceManager --> PostService --> PostRepository
 PostRepository <|-- RuntimePostRepository
 
 PostService <|.. PostServiceDecorator
-PostServiceDecorator <|-- ArchivePostServiceDecorator
+PostServiceDecorator <|-- SearchPostService
 
 PostService --> BinManager
 BinManager <|-- SimpleBinManager
